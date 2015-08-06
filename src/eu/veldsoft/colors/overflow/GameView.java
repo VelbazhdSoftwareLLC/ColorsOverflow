@@ -241,12 +241,12 @@ public class GameView extends View {
 		 */
 		if (board.end() == true) {
 			String whoWon = "";
-			if (board.getWho() < 0) {
-				whoWon = context.getString(R.string.red_won);
-			}
-			if (board.getWho() > 0) {
-				whoWon = context.getString(R.string.blue_won);
-			}
+//			if (board.getWho() < 0) {
+//				whoWon = context.getString(R.string.red_won);
+//			}
+//			if (board.getWho() > 0) {
+//				whoWon = context.getString(R.string.blue_won);
+//			}
 			keepHighscore(whoWon);
 
 			/*
@@ -255,7 +255,7 @@ public class GameView extends View {
 			 */
 			try {
 				HardAI hard = ((HardAI) ai);
-				hard.storeAnnFitness(board.getWho() * 1 / (double) points);
+				//hard.storeAnnFitness(board.getWho() * 1 / (double) points);
 				// TODO Check if it is correct.
 				// ANN3Layers ann = hard.getAnn();
 				// final HardAISQLAdapter HardAISQL = new
@@ -330,56 +330,56 @@ public class GameView extends View {
 		 * If there is an achieved score write it in the DB. If there is a score
 		 * lower than the previous 10 just toast.
 		 */
-		if (countRow >= 10
-				&& minimalscore > achieved
-				|| (oneplayer == true && board.getWinner() == Board.NEGATIVE_PLAYER)) {
-			if (oneplayer == true) {
-				winner = context.getString(R.string.computer_won);
-			}
-			String toast_end = context.getString(R.string.toast_game_end);
-			Toast toast = Toast.makeText(context,
-					String.format(toast_end, winner), 10000);
-			toast.setGravity(Gravity.CENTER, 0, 0);
-			toast.show();
-			mySQLiteAdapter.close();
-			context.finish();
-		} else {
-			String highscore_title = context
-					.getString(R.string.highscore_title);
-			String OK_button = context.getString(R.string.OK_button);
-			alertDialog.setTitle(String.format(highscore_title, winner));
-			alertDialog.setMessage(context.getString(R.string.won_message));
-			alertDialog.setView(scorein);
-			alertDialog.setButton(OK_button,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							final String scored = scorein.getText().toString();
-
-							try {
-								if (countRow == 0) {
-									mySQLiteAdapter.insert(scored, achieved);
-								} else {
-									int minid = mySQLiteAdapter.minimalId();
-									if (countRow < 10) {
-										mySQLiteAdapter
-												.insert(scored, achieved);
-									} else {
-										if (mySQLiteAdapter.minimal() < achieved) {
-											mySQLiteAdapter.updateByID(minid,
-													scored, achieved);
-										}
-									}
-								}
-							} finally {
-								/*
-								 * Finally end the game and return to menu.
-								 */
-								mySQLiteAdapter.close();
-								context.finish();
-							}
-						}
-					});
-		}
+//		if (countRow >= 10
+//				&& minimalscore > achieved
+//				|| (oneplayer == true && board.getWinner() == Board.NEGATIVE_PLAYER)) {
+//			if (oneplayer == true) {
+//				winner = context.getString(R.string.computer_won);
+//			}
+//			String toast_end = context.getString(R.string.toast_game_end);
+//			Toast toast = Toast.makeText(context,
+//					String.format(toast_end, winner), 10000);
+//			toast.setGravity(Gravity.CENTER, 0, 0);
+//			toast.show();
+//			mySQLiteAdapter.close();
+//			context.finish();
+//		} else {
+//			String highscore_title = context
+//					.getString(R.string.highscore_title);
+//			String OK_button = context.getString(R.string.OK_button);
+//			alertDialog.setTitle(String.format(highscore_title, winner));
+//			alertDialog.setMessage(context.getString(R.string.won_message));
+//			alertDialog.setView(scorein);
+//			alertDialog.setButton(OK_button,
+//					new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog, int which) {
+//							final String scored = scorein.getText().toString();
+//
+//							try {
+//								if (countRow == 0) {
+//									mySQLiteAdapter.insert(scored, achieved);
+//								} else {
+//									int minid = mySQLiteAdapter.minimalId();
+//									if (countRow < 10) {
+//										mySQLiteAdapter
+//												.insert(scored, achieved);
+//									} else {
+//										if (mySQLiteAdapter.minimal() < achieved) {
+//											mySQLiteAdapter.updateByID(minid,
+//													scored, achieved);
+//										}
+//									}
+//								}
+//							} finally {
+//								/*
+//								 * Finally end the game and return to menu.
+//								 */
+//								mySQLiteAdapter.close();
+//								context.finish();
+//							}
+//						}
+//					});
+//		}
 
 		/*
 		 * Set the icon for the dialog.
@@ -492,10 +492,7 @@ public class GameView extends View {
 				/*
 				 * Who's turn is it.
 				 */
-				if (board.getWho() > 0)
-					whoIs = context.getString(R.string.red_turn);
-				if (board.getWho() < 0)
-					whoIs = context.getString(R.string.blue_turn);
+				whoIs = board.getWho().tag();
 			}
 		}
 
@@ -622,7 +619,7 @@ public class GameView extends View {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			humanDidMove = board.move(
 					(int) (Board.BOARD_SIZE * event.getX() / width),
-					(int) (Board.BOARD_SIZE * event.getY() / height), 0);
+					(int) (Board.BOARD_SIZE * event.getY() / height), null);
 
 			if (humanDidMove == true && oneplayer == true) {
 				// TODO Give time to the human player to see his/her move, by
@@ -635,7 +632,7 @@ public class GameView extends View {
 				try {
 					Point coordinates = ai.move(board.getStones(),
 							board.getWho(), board.getTurn());
-					board.move(coordinates.x, coordinates.y, 0);
+					board.move(coordinates.x, coordinates.y, null);
 				} catch (Exception e) {
 				}
 			}

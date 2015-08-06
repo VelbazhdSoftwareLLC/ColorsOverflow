@@ -49,7 +49,7 @@ public class HardAI extends AI {
 	/**
 	 * Uses +1 for the positive player and -1 for the negative player.
 	 */
-	private int who;
+	private Board.PlayerIndex who;
 
 	/**
 	 * Holds the coordinates for the AI move.
@@ -78,7 +78,17 @@ public class HardAI extends AI {
 			for (int j = 0; j < stones[i].length; j++) {
 				// TODO Take in mind that ANN should consider positive and
 				// negative player.
-				stones[i][j] = (-who) * stones[i][j];
+				switch (stones[i][j] & 0x3) {
+				case 1:
+					stones[i][j] = who.small();
+					break;
+				case 2:
+					stones[i][j] = who.middle();
+					break;
+				case 3:
+					stones[i][j] = who.large();
+					break;
+				}
 				size++;
 			}
 		}
@@ -119,7 +129,7 @@ public class HardAI extends AI {
 		for (int i = 0, k = 0; i < stones.length; i++) {
 			for (int j = 0; j < stones[i].length; j++, k++) {
 				if (stones[i][j] != 0
-						&& stones[i][j] / Math.abs(stones[i][j]) == who
+						&& Board.PlayerIndex.index(stones[i][j] >> 8) == who
 						&& annOutput[k] > best) {
 					coordinates = new Point(i, j);
 					best = annOutput[k];
@@ -268,7 +278,8 @@ public class HardAI extends AI {
 	 * 
 	 * @date 13 Mar 2012
 	 */
-	public Point move(int stones[][], int who, int onMove) throws Exception {
+	public Point move(int stones[][], Board.PlayerIndex who, int onMove)
+			throws Exception {
 		this.stones = stones;
 		this.who = who;
 
@@ -282,7 +293,7 @@ public class HardAI extends AI {
 		/*
 		 * We check if the player that is on the board is correctly initialized.
 		 */
-		if (who != Board.NEGATIVE_PLAYER && who != Board.POSITIVE_PLAYER) {
+		if (who == null) {
 			throw (new Exception("Incorrect player!"));
 		}
 

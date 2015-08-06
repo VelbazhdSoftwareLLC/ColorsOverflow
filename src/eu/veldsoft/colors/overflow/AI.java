@@ -69,7 +69,7 @@ abstract public class AI {
 	 * 
 	 * @date 13 April 2012
 	 */
-	public Point move(int stones[][], int who, int onMove) throws Exception {
+	public Point move(int stones[][], Board.PlayerIndex who, int onMove) throws Exception {
 		return (null);
 	}
 

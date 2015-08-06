@@ -37,6 +37,84 @@ import java.io.Serializable;
 public class Board implements Serializable {
 
 	/**
+	 * 
+	 * @author Todor Balabanov
+	 */
+	public enum PlayerIndex {
+		FIRST(1, "Red Player"), SECOND(2, "Blue Player")/* , THIRD(3, "Purple Player"), FOURTH(4, "Green Player"), FIFTH(5, "Yellow Player"), SIXTH(6, "Brown Player") */;
+
+		private int index;
+		
+		private String tag;
+		
+		static public PlayerIndex index(int index) {
+			if(index == FIRST.index) {
+				return FIRST;
+			}
+			if(index == SECOND.index) {
+				return SECOND;
+			}
+//			if(index == THIRD.index) {
+//				return THIRD;
+//			}
+//			if(index == FOURTH.index) {
+//				return FOURTH;
+//			}
+//			if(index == FIFTH.index) {
+//				return FIFTH;
+//			}
+//			if(index == SIXTH.index) {
+//				return SIXTH;
+//			}
+			
+			return null;
+		}
+
+		private PlayerIndex(int index, String tag) {
+			this.index = index;
+			this.tag = tag;
+		}
+		
+		public String tag() {
+			return tag;
+		}
+		
+		public PlayerIndex next() {
+			if(this == FIRST) {
+				return SECOND;
+			} else if(this == SECOND) {
+				return FIRST;
+//			} else if(this == THIRD) {
+//				return FOURTH;
+//			} else if(this == FOURTH) {
+//				return FIFTH;
+//			} else if(this == FIFTH) {
+//				return SIXTH;
+//			} else if(this == SIXTH) {
+//				return FIRST;
+			}
+			
+			return null;
+		}
+		
+		public int empty() {
+			return index << 8;
+		}
+		
+		public int small() {
+			return (index << 8) + 1;
+		}
+		
+		public int middle() {
+			return (index << 8) + 2;
+		}
+		
+		public int large() {
+			return (index << 8) + 3;
+		}
+	}
+
+	/**
 	 * What kind of stones are on the board.
 	 */
 	private int stones[][] = new int[BOARD_SIZE][BOARD_SIZE];
@@ -60,16 +138,6 @@ public class Board implements Serializable {
 	 * Defines the maximum board index. The board "boarder".
 	 */
 	public static final int BOARD_MAX_INDEX = 8;
-
-	/**
-	 * This is the positive player constant.
-	 */
-	public static final int POSITIVE_PLAYER = +1;
-
-	/**
-	 * This is the negative player constant.
-	 */
-	public static final int NEGATIVE_PLAYER = -1;
 
 	/**
 	 * Describes a positive piece of size 3.
@@ -120,7 +188,7 @@ public class Board implements Serializable {
 	/**
 	 * Use +1 for the positive player and -1 for the negative player.
 	 */
-	public int who = 0;
+	public PlayerIndex who = null;
 
 	/**
 	 * Refills the cells in the case of "overflowing". Handles the logic used
@@ -163,17 +231,19 @@ public class Board implements Serializable {
 		 * If the value of a cell is positive and it is negatives players turn -
 		 * we change the value of the cell.
 		 */
-		if (stones[x][y] > 0 && who < 0) {
-			stones[x][y] = -stones[x][y];
-		}
-		/*
-		 * Analogical, but for the other player.
-		 */
-		if (stones[x][y] < 0 && who > 0) {
-			stones[x][y] = -stones[x][y];
+		switch (stones[x][y] & 0x3) {
+		case 1:
+			stones[x][y] = who.small();
+			break;
+		case 2:
+			stones[x][y] = who.middle();
+			break;
+		case 3:
+			stones[x][y] = who.large();
+			break;
 		}
 
-		stones[x][y] += who;
+		stones[x][y]++;
 
 		// TODO May be it can be more than 4.
 		int amount = Math.abs(stones[x][y]);
@@ -203,7 +273,7 @@ public class Board implements Serializable {
 	 */
 	public Board() {
 		super();
-		who = POSITIVE_PLAYER;
+		who = PlayerIndex.FIRST;
 		turn = 0;
 		for (int i = 0; i < stones.length; i++) {
 			for (int j = 0; j < stones[i].length; j++) {
@@ -272,7 +342,7 @@ public class Board implements Serializable {
 	 * 
 	 * @date 11 Mar 2012
 	 */
-	public boolean move(int x, int y, int who) {
+	public boolean move(int x, int y, PlayerIndex who) {
 
 		if (x < BOARD_MIN_INDEX) {
 			return (false);
@@ -290,7 +360,7 @@ public class Board implements Serializable {
 			return (false);
 		}
 
-		if (who == 0) {
+		if (who == null) {
 			who = this.who;
 		}
 
@@ -302,8 +372,8 @@ public class Board implements Serializable {
 		 * Initialization game move.
 		 */
 		if (turn < NUMBER_OF_DEPLOYMENT_MOVES && stones[x][y] == EMPTY_CELL) {
-			stones[x][y] = 2 * who;
-			this.who = -this.who;
+			stones[x][y] = who.middle();
+			this.who = this.who.next();
 			turn++;
 
 			return (true);
@@ -313,9 +383,9 @@ public class Board implements Serializable {
 		 * Regular game move.
 		 */
 		if (turn >= NUMBER_OF_DEPLOYMENT_MOVES && stones[x][y] != EMPTY_CELL
-				&& stones[x][y] / Math.abs(stones[x][y]) == who) {
+				&& Board.PlayerIndex.index(stones[x][y]>>8) == who) {
 			refill(x, y);
-			this.who = -this.who;
+			this.who = this.who.next();
 			turn++;
 
 			return (true);
@@ -359,8 +429,8 @@ public class Board implements Serializable {
 	 * 
 	 * @date 11 Mar 2012
 	 */
-	public int getWho() {
-		return (this.who);
+	public PlayerIndex getWho() {
+		return (who);
 	}
 
 	/**

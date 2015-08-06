@@ -50,12 +50,13 @@ public class NormalAI extends AI {
 	/**
 	 * What kind of stones are on the board.
 	 */
+	// TODO Change int to proper object.
 	private int stones[][];
 
 	/**
 	 * Uses +1 for the positive player and -1 for the negative player.
 	 */
-	private int who;
+	private Board.PlayerIndex who;
 
 	/**
 	 * Defines the number of turns.
@@ -90,8 +91,9 @@ public class NormalAI extends AI {
 			coordinates.y = (int) (Math.random() * stones[coordinates.x].length);
 
 			if (stones[coordinates.x][coordinates.y] != Board.EMPTY_CELL
-					&& stones[coordinates.x][coordinates.y]
-							/ Math.abs(stones[coordinates.x][coordinates.y]) == who) {
+					&& Board.PlayerIndex
+							.index(stones[coordinates.x][coordinates.y] >> 8)
+							== who) {
 				break;
 			}
 		}
@@ -277,7 +279,7 @@ public class NormalAI extends AI {
 		for (int i = 0; i < stones.length && found == false; i++) {
 			for (int j = 0; j < stones[i].length && found == false; j++) {
 				if (stones[i][j] != Board.EMPTY_CELL
-						&& stones[i][j] / Math.abs(stones[i][j]) == who) {
+						&& Board.PlayerIndex.index(stones[i][j] >> 8) == who) {
 					found = true;
 				}
 			}
@@ -307,7 +309,8 @@ public class NormalAI extends AI {
 	 * @date 9 April 2012
 	 */
 	@Override
-	public Point move(int stones[][], int who, int onMove) throws Exception {
+	public Point move(int stones[][], Board.PlayerIndex who, int onMove)
+			throws Exception {
 		this.stones = stones;
 		this.who = who;
 		this.onMove = onMove;
@@ -322,7 +325,7 @@ public class NormalAI extends AI {
 		/*
 		 * We check if the player that is on the board is correctly initialized.
 		 */
-		if (who != Board.NEGATIVE_PLAYER && who != Board.POSITIVE_PLAYER) {
+		if (who == null) {
 			throw (new Exception("Incorrect player!"));
 		}
 
