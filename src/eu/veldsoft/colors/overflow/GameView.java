@@ -135,7 +135,7 @@ class GameView extends View {
 	/**
 	 * Used to initialize the Easy AI.
 	 */
-	AI ai = null;
+	AI ai[] = new AI[5];
 
 	/**
 	 * Sound preferences boolean.
@@ -248,7 +248,7 @@ class GameView extends View {
 			 * heuristic algorithms are not so strict.
 			 */
 			try {
-				HardAI hard = ((HardAI) ai);
+				// HardAI hard = ((HardAI) ai);
 				// hard.storeAnnFitness(board.getWho() * 1 / (double) points);
 				// TODO Check if it is correct.
 				// ANN3Layers ann = hard.getAnn();
@@ -379,19 +379,18 @@ class GameView extends View {
 		 * Set the icon for the dialog.
 		 */
 		alertDialog.setIcon(R.drawable.ic_launcher);
-		
+
 		/*
 		 * Play the winning sound.
 		 */
 		if (sound == true) {
 			playSound(SOUND_WON);
 		}
-		
+
 		/*
 		 * Show the dialog.
 		 */
-		//TODO There is some exception.
-		//alertDialog.show();
+		alertDialog.show();
 	}
 
 	/**
@@ -444,10 +443,10 @@ class GameView extends View {
 		int stones[][] = board.getStones();
 		for (int j = 0; j < Board.BOARD_SIZE; j++) {
 			for (int i = 0; i < Board.BOARD_SIZE; i++) {
-				if(stones[i][j] == Board.EMPTY_CELL) {
+				if (stones[i][j] == Board.EMPTY_CELL) {
 					continue;
 				}
-				
+
 				Bitmap stone = null;
 
 				switch (PlayerIndex.index(stones[i][j] >> 8)) {
@@ -483,102 +482,70 @@ class GameView extends View {
 						break;
 					}
 					break;
-				// case THIRD:
-//					switch (stones[i][j] & 0x3) {
-//					case 1:
-//						stone = pulls[6];
-//						points += 1;
-//						break;
-//					case 2:
-//						stone = pulls[7];
-//						points += 1;
-//						break;
-//					case 3:
-//						stone = pulls[8];
-//						points += 1;
-//						break;
-//					}
-				// break;
-				// case FOURTH:
-//					switch (stones[i][j] & 0x3) {
-//					case 1:
-//						stone = pulls[9];
-//						points += 1;
-//						break;
-//					case 2:
-//						stone = pulls[10];
-//						points += 1;
-//						break;
-//					case 3:
-//						stone = pulls[11];
-//						points += 1;
-//						break;
-//					}
-				// break;
-				// case FIFTH:
-//					switch (stones[i][j] & 0x3) {
-//					case 1:
-//						stone = pulls[12];
-//						points += 1;
-//						break;
-//					case 2:
-//						stone = pulls[13];
-//						points += 1;
-//						break;
-//					case 3:
-//						stone = pulls[14];
-//						points += 1;
-//						break;
-//					}
-				// break;
-				// case SIXTH:
-//					switch (stones[i][j] & 0x3) {
-//					case 1:
-//						stone = pulls[15];
-//						points += 1;
-//						break;
-//					case 2:
-//						stone = pulls[16];
-//						points += 1;
-//						break;
-//					case 3:
-//						stone = pulls[17];
-//						points += 1;
-//						break;
-//					}
-				// break;
-				}
-
-				if (stones[i][j] < 0) {
-					switch (Math.abs(stones[i][j])) {
+				case THIRD:
+					switch (stones[i][j] & 0x3) {
 					case 1:
-						stone = pulls[3];
+						stone = pulls[6];
 						points += 1;
 						break;
 					case 2:
-						stone = pulls[4];
-						points += 2;
+						stone = pulls[7];
+						points += 1;
 						break;
 					case 3:
-						stone = pulls[5];
-						points += 3;
+						stone = pulls[8];
+						points += 1;
 						break;
 					}
-				} else if (stones[i][j] > 0) {
-					switch (Math.abs(stones[i][j])) {
+					break;
+				case FOURTH:
+					switch (stones[i][j] & 0x3) {
 					case 1:
-						stone = pulls[0];
+						stone = pulls[9];
 						points += 1;
 						break;
 					case 2:
-						stone = pulls[1];
-						points += 2;
+						stone = pulls[10];
+						points += 1;
 						break;
 					case 3:
-						stone = pulls[2];
-						points += 3;
+						stone = pulls[11];
+						points += 1;
 						break;
 					}
+					break;
+				case FIFTH:
+					switch (stones[i][j] & 0x3) {
+					case 1:
+						stone = pulls[12];
+						points += 1;
+						break;
+					case 2:
+						stone = pulls[13];
+						points += 1;
+						break;
+					case 3:
+						stone = pulls[14];
+						points += 1;
+						break;
+					}
+					break;
+				case SIXTH:
+					switch (stones[i][j] & 0x3) {
+					case 1:
+						stone = pulls[15];
+						points += 1;
+						break;
+					case 2:
+						stone = pulls[16];
+						points += 1;
+						break;
+					case 3:
+						stone = pulls[17];
+						points += 1;
+						break;
+					}
+					break;
 				}
 
 				/*
@@ -645,7 +612,6 @@ class GameView extends View {
 		}
 
 		layout.draw(canvas);
-
 	}
 
 	/**
@@ -716,6 +682,10 @@ class GameView extends View {
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		if(board.end() == true) {
+			return true;
+		}
+		
 		boolean humanDidMove = false;
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			humanDidMove = board.move(
@@ -723,18 +693,15 @@ class GameView extends View {
 					(int) (Board.BOARD_SIZE * event.getY() / height), null);
 
 			if (humanDidMove == true && oneplayer == true) {
-				// TODO Give time to the human player to see his/her move, by
-				// using timer.
-				try {
-					Thread.sleep(0);
-				} catch (InterruptedException e) {
-				}
-
-				try {
-					Point coordinates = ai.move(board.getStones(),
-							board.getWho(), board.getTurn());
-					board.move(coordinates.x, coordinates.y, null);
-				} catch (Exception e) {
+				Point coordinates = null;
+				for (AI computer : ai) {
+					try {
+						coordinates = computer.move(board.getStones(),
+								board.getWho(), board.getTurn());
+						board.move(coordinates.x, coordinates.y, null);
+					} catch (Exception e) {
+						board.nextPlayer();
+					}
 				}
 			}
 		} else {
@@ -780,14 +747,16 @@ class GameView extends View {
 		this.board = board;
 
 		if (oneplayer == true) {
-			if (preferences.getBoolean("easy", true) == true) {
-				ai = new EasyAI();
-			}
-			if (preferences.getBoolean("normal", false) == true) {
-				ai = new NormalAI();
-			}
-			if (preferences.getBoolean("hard", false) == true) {
-				ai = new HardAI();
+			for (int i = 0; i < ai.length; i++) {
+				if (preferences.getBoolean("easy", true) == true) {
+					ai[i] = new EasyAI();
+				}
+				if (preferences.getBoolean("normal", false) == true) {
+					ai[i] = new NormalAI();
+				}
+				if (preferences.getBoolean("hard", false) == true) {
+					ai[i] = new HardAI();
+				}
 			}
 		}
 

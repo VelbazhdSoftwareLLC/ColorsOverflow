@@ -75,7 +75,7 @@ class Board implements Serializable {
 	 * Defines the number of initial turns, first 6 (default) turns are with
 	 * size 2. 3 from negative and 3 from positive player.
 	 */
-	public static final int NUMBER_OF_DEPLOYMENT_MOVES = 6;
+	public static final int NUMBER_OF_DEPLOYMENT_MOVES = 18;
 
 	/**
 	 * Use +1 for the positive player and -1 for the negative player.
@@ -218,6 +218,13 @@ class Board implements Serializable {
 	}
 
 	/**
+	 * 
+	 */
+	public void nextPlayer() {
+		who = who.next();
+	}
+	
+	/**
 	 * Handles the movement of the stones.
 	 * 
 	 * @param x
@@ -238,7 +245,7 @@ class Board implements Serializable {
 	 * @date 11 Mar 2012
 	 */
 	public boolean move(int x, int y, PlayerIndex who) {
-
+		
 		if (x < BOARD_MIN_INDEX) {
 			return (false);
 		}
@@ -268,7 +275,7 @@ class Board implements Serializable {
 		 */
 		if (turn < NUMBER_OF_DEPLOYMENT_MOVES && stones[x][y] == EMPTY_CELL) {
 			stones[x][y] = who.middle();
-			this.who = this.who.next();
+			nextPlayer();
 			turn++;
 
 			return (true);
@@ -280,7 +287,7 @@ class Board implements Serializable {
 		if (turn >= NUMBER_OF_DEPLOYMENT_MOVES && stones[x][y] != EMPTY_CELL
 				&& PlayerIndex.index(stones[x][y] >> 8) == who) {
 			refill(x, y);
-			this.who = this.who.next();
+			nextPlayer();
 			turn++;
 
 			return (true);

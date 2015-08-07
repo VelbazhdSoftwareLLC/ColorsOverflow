@@ -73,4 +73,11 @@ abstract class AI {
 		return (null);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean hasMove() {
+		return false;
+	}
 }

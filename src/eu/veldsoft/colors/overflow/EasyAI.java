@@ -97,7 +97,7 @@ class EasyAI extends AI {
 		for (int i = 0; i < stones.length && found == false; i++) {
 			for (int j = 0; j < stones[i].length && found == false; j++) {
 				if (stones[i][j] != Board.EMPTY_CELL
-						&& PlayerIndex.index(stones[i][j]>>8) == who) {
+						&& PlayerIndex.index(stones[i][j] >> 8) == who) {
 					found = true;
 				}
 			}
@@ -119,7 +119,8 @@ class EasyAI extends AI {
 			coordinates.y = (int) (Math.random() * stones[coordinates.x].length);
 
 			if (stones[coordinates.x][coordinates.y] != Board.EMPTY_CELL
-					&& PlayerIndex.index(stones[coordinates.x][coordinates.y]>>8) == who) {
+					&& PlayerIndex
+							.index(stones[coordinates.x][coordinates.y] >> 8) == who) {
 				break;
 			}
 		}
@@ -145,7 +146,8 @@ class EasyAI extends AI {
 	 * 
 	 * @date 27 Mar 2012
 	 */
-	public Point move(int stones[][], PlayerIndex who, int onMove) throws Exception {
+	public Point move(int stones[][], PlayerIndex who, int onMove)
+			throws Exception {
 		this.stones = stones;
 		this.who = who;
 		this.onMove = onMove;
@@ -188,4 +190,30 @@ class EasyAI extends AI {
 		return (coordinates);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean hasMove() {
+		/*
+		 * Phase one A.I.
+		 */
+		if (onMove < Board.NUMBER_OF_DEPLOYMENT_MOVES) {
+			return true;
+		} else {
+			/*
+			 * Phase two A.I.
+			 */
+			for (int i = 0; i < stones.length; i++) {
+				for (int j = 0; j < stones[i].length; j++) {
+					if (stones[i][j] != Board.EMPTY_CELL
+							&& PlayerIndex.index(stones[i][j] >> 8) == who) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

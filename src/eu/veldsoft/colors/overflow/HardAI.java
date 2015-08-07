@@ -336,4 +336,5 @@ class HardAI extends AI {
 	void storeAnnFitness(double fitness) {
 		ann.setFitness(fitness);
 	}
+
 }

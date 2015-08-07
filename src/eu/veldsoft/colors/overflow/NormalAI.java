@@ -24,6 +24,7 @@
 package eu.veldsoft.colors.overflow;
 
 import android.graphics.Point;
+
 import java.util.Vector;
 
 /**
@@ -351,6 +352,33 @@ class NormalAI extends AI {
 		}
 
 		return (coordinates);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean hasMove() {
+		/*
+		 * Phase one A.I.
+		 */
+		if (onMove < Board.NUMBER_OF_DEPLOYMENT_MOVES) {
+			return true;
+		} else {
+			/*
+			 * Phase two A.I.
+			 */
+			for (int i = 0; i < stones.length; i++) {
+				for (int j = 0; j < stones[i].length; j++) {
+					if (stones[i][j] != Board.EMPTY_CELL
+							&& PlayerIndex.index(stones[i][j] >> 8) == who) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

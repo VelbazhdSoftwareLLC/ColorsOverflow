@@ -5,14 +5,9 @@ package eu.veldsoft.colors.overflow;
  * @author Todor Balabanov
  */
 enum PlayerIndex {
-	FIRST(1, "Red Player"), SECOND(2, "Blue Player")/*
-													 * , THIRD(3,
-													 * "Purple Player"),
-													 * FOURTH(4,
-													 * "Green Player"), FIFTH(5,
-													 * "Yellow Player"),
-													 * SIXTH(6, "Brown Player")
-													 */;
+	FIRST(1, "Red Player"), SECOND(2, "Blue Player"), THIRD(3, "Purple Player"), FOURTH(
+			4, "Green Player"), FIFTH(5, "Yellow Player"), SIXTH(6,
+			"Brown Player");
 
 	private int index;
 
@@ -25,18 +20,18 @@ enum PlayerIndex {
 		if (index == SECOND.index) {
 			return SECOND;
 		}
-		// if(index == THIRD.index) {
-		// return THIRD;
-		// }
-		// if(index == FOURTH.index) {
-		// return FOURTH;
-		// }
-		// if(index == FIFTH.index) {
-		// return FIFTH;
-		// }
-		// if(index == SIXTH.index) {
-		// return SIXTH;
-		// }
+		if (index == THIRD.index) {
+			return THIRD;
+		}
+		if (index == FOURTH.index) {
+			return FOURTH;
+		}
+		if (index == FIFTH.index) {
+			return FIFTH;
+		}
+		if (index == SIXTH.index) {
+			return SIXTH;
+		}
 
 		return null;
 	}
@@ -54,15 +49,15 @@ enum PlayerIndex {
 		if (this == FIRST) {
 			return SECOND;
 		} else if (this == SECOND) {
+			return THIRD;
+		} else if (this == THIRD) {
+			return FOURTH;
+		} else if (this == FOURTH) {
+			return FIFTH;
+		} else if (this == FIFTH) {
+			return SIXTH;
+		} else if (this == SIXTH) {
 			return FIRST;
-			// } else if(this == THIRD) {
-			// return FOURTH;
-			// } else if(this == FOURTH) {
-			// return FIFTH;
-			// } else if(this == FIFTH) {
-			// return SIXTH;
-			// } else if(this == SIXTH) {
-			// return FIRST;
 		}
 
 		return null;
