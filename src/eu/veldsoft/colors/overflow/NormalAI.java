@@ -35,7 +35,7 @@ import java.util.Vector;
  * 
  * @date 09 April 2012
  */
-public class NormalAI extends AI {
+class NormalAI extends AI {
 
 	/**
 	 * Defines the maximum number of valid moves to be generated.
@@ -56,7 +56,7 @@ public class NormalAI extends AI {
 	/**
 	 * Uses +1 for the positive player and -1 for the negative player.
 	 */
-	private Board.PlayerIndex who;
+	private PlayerIndex who;
 
 	/**
 	 * Defines the number of turns.
@@ -91,7 +91,7 @@ public class NormalAI extends AI {
 			coordinates.y = (int) (Math.random() * stones[coordinates.x].length);
 
 			if (stones[coordinates.x][coordinates.y] != Board.EMPTY_CELL
-					&& Board.PlayerIndex
+					&& PlayerIndex
 							.index(stones[coordinates.x][coordinates.y] >> 8)
 							== who) {
 				break;
@@ -279,7 +279,7 @@ public class NormalAI extends AI {
 		for (int i = 0; i < stones.length && found == false; i++) {
 			for (int j = 0; j < stones[i].length && found == false; j++) {
 				if (stones[i][j] != Board.EMPTY_CELL
-						&& Board.PlayerIndex.index(stones[i][j] >> 8) == who) {
+						&& PlayerIndex.index(stones[i][j] >> 8) == who) {
 					found = true;
 				}
 			}
@@ -309,7 +309,7 @@ public class NormalAI extends AI {
 	 * @date 9 April 2012
 	 */
 	@Override
-	public Point move(int stones[][], Board.PlayerIndex who, int onMove)
+	public Point move(int stones[][], PlayerIndex who, int onMove)
 			throws Exception {
 		this.stones = stones;
 		this.who = who;

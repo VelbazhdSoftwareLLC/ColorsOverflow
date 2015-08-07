@@ -59,7 +59,7 @@ import android.widget.Toast;
  * 
  * @date 11 Mar 2012
  */
-public class GameView extends View {
+class GameView extends View {
 
 	/**
 	 * Initializes the width of the board variable.
@@ -240,13 +240,7 @@ public class GameView extends View {
 		 * have a high score.
 		 */
 		if (board.end() == true) {
-			String whoWon = "";
-//			if (board.getWho() < 0) {
-//				whoWon = context.getString(R.string.red_won);
-//			}
-//			if (board.getWho() > 0) {
-//				whoWon = context.getString(R.string.blue_won);
-//			}
+			String whoWon = board.getWinner().tag();
 			keepHighscore(whoWon);
 
 			/*
@@ -255,7 +249,7 @@ public class GameView extends View {
 			 */
 			try {
 				HardAI hard = ((HardAI) ai);
-				//hard.storeAnnFitness(board.getWho() * 1 / (double) points);
+				// hard.storeAnnFitness(board.getWho() * 1 / (double) points);
 				// TODO Check if it is correct.
 				// ANN3Layers ann = hard.getAnn();
 				// final HardAISQLAdapter HardAISQL = new
@@ -330,71 +324,74 @@ public class GameView extends View {
 		 * If there is an achieved score write it in the DB. If there is a score
 		 * lower than the previous 10 just toast.
 		 */
-//		if (countRow >= 10
-//				&& minimalscore > achieved
-//				|| (oneplayer == true && board.getWinner() == Board.NEGATIVE_PLAYER)) {
-//			if (oneplayer == true) {
-//				winner = context.getString(R.string.computer_won);
-//			}
-//			String toast_end = context.getString(R.string.toast_game_end);
-//			Toast toast = Toast.makeText(context,
-//					String.format(toast_end, winner), 10000);
-//			toast.setGravity(Gravity.CENTER, 0, 0);
-//			toast.show();
-//			mySQLiteAdapter.close();
-//			context.finish();
-//		} else {
-//			String highscore_title = context
-//					.getString(R.string.highscore_title);
-//			String OK_button = context.getString(R.string.OK_button);
-//			alertDialog.setTitle(String.format(highscore_title, winner));
-//			alertDialog.setMessage(context.getString(R.string.won_message));
-//			alertDialog.setView(scorein);
-//			alertDialog.setButton(OK_button,
-//					new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int which) {
-//							final String scored = scorein.getText().toString();
-//
-//							try {
-//								if (countRow == 0) {
-//									mySQLiteAdapter.insert(scored, achieved);
-//								} else {
-//									int minid = mySQLiteAdapter.minimalId();
-//									if (countRow < 10) {
-//										mySQLiteAdapter
-//												.insert(scored, achieved);
-//									} else {
-//										if (mySQLiteAdapter.minimal() < achieved) {
-//											mySQLiteAdapter.updateByID(minid,
-//													scored, achieved);
-//										}
-//									}
-//								}
-//							} finally {
-//								/*
-//								 * Finally end the game and return to menu.
-//								 */
-//								mySQLiteAdapter.close();
-//								context.finish();
-//							}
-//						}
-//					});
-//		}
+		if (countRow >= 10
+				&& minimalscore > achieved
+				|| (oneplayer == true && board.getWinner() != PlayerIndex.FIRST)) {
+			if (oneplayer == true) {
+				winner = context.getString(R.string.computer_won);
+			}
+			String toast_end = context.getString(R.string.toast_game_end);
+			Toast toast = Toast.makeText(context,
+					String.format(toast_end, winner), 10000);
+			toast.setGravity(Gravity.CENTER, 0, 0);
+			toast.show();
+			mySQLiteAdapter.close();
+			context.finish();
+		} else {
+			String highscore_title = context
+					.getString(R.string.highscore_title);
+			String OK_button = context.getString(R.string.OK_button);
+			alertDialog.setTitle(String.format(highscore_title, winner));
+			alertDialog.setMessage(context.getString(R.string.won_message));
+			alertDialog.setView(scorein);
+			alertDialog.setButton(OK_button,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							final String scored = scorein.getText().toString();
+
+							try {
+								if (countRow == 0) {
+									mySQLiteAdapter.insert(scored, achieved);
+								} else {
+									int minid = mySQLiteAdapter.minimalId();
+									if (countRow < 10) {
+										mySQLiteAdapter
+												.insert(scored, achieved);
+									} else {
+										if (mySQLiteAdapter.minimal() < achieved) {
+											mySQLiteAdapter.updateByID(minid,
+													scored, achieved);
+										}
+									}
+								}
+							} finally {
+								/*
+								 * Finally end the game and return to menu.
+								 */
+								mySQLiteAdapter.close();
+								context.finish();
+							}
+						}
+					});
+		}
 
 		/*
 		 * Set the icon for the dialog.
 		 */
 		alertDialog.setIcon(R.drawable.ic_launcher);
+		
 		/*
 		 * Play the winning sound.
 		 */
 		if (sound == true) {
 			playSound(SOUND_WON);
 		}
+		
 		/*
 		 * Show the dialog.
 		 */
-		alertDialog.show();
+		//TODO There is some exception.
+		//alertDialog.show();
 	}
 
 	/**
@@ -447,7 +444,111 @@ public class GameView extends View {
 		int stones[][] = board.getStones();
 		for (int j = 0; j < Board.BOARD_SIZE; j++) {
 			for (int i = 0; i < Board.BOARD_SIZE; i++) {
+				if(stones[i][j] == Board.EMPTY_CELL) {
+					continue;
+				}
+				
 				Bitmap stone = null;
+
+				switch (PlayerIndex.index(stones[i][j] >> 8)) {
+				case FIRST:
+					switch (stones[i][j] & 0x3) {
+					case 1:
+						stone = pulls[0];
+						points += 1;
+						break;
+					case 2:
+						stone = pulls[1];
+						points += 1;
+						break;
+					case 3:
+						stone = pulls[2];
+						points += 1;
+						break;
+					}
+					break;
+				case SECOND:
+					switch (stones[i][j] & 0x3) {
+					case 1:
+						stone = pulls[3];
+						points += 1;
+						break;
+					case 2:
+						stone = pulls[4];
+						points += 1;
+						break;
+					case 3:
+						stone = pulls[5];
+						points += 1;
+						break;
+					}
+					break;
+				// case THIRD:
+//					switch (stones[i][j] & 0x3) {
+//					case 1:
+//						stone = pulls[6];
+//						points += 1;
+//						break;
+//					case 2:
+//						stone = pulls[7];
+//						points += 1;
+//						break;
+//					case 3:
+//						stone = pulls[8];
+//						points += 1;
+//						break;
+//					}
+				// break;
+				// case FOURTH:
+//					switch (stones[i][j] & 0x3) {
+//					case 1:
+//						stone = pulls[9];
+//						points += 1;
+//						break;
+//					case 2:
+//						stone = pulls[10];
+//						points += 1;
+//						break;
+//					case 3:
+//						stone = pulls[11];
+//						points += 1;
+//						break;
+//					}
+				// break;
+				// case FIFTH:
+//					switch (stones[i][j] & 0x3) {
+//					case 1:
+//						stone = pulls[12];
+//						points += 1;
+//						break;
+//					case 2:
+//						stone = pulls[13];
+//						points += 1;
+//						break;
+//					case 3:
+//						stone = pulls[14];
+//						points += 1;
+//						break;
+//					}
+				// break;
+				// case SIXTH:
+//					switch (stones[i][j] & 0x3) {
+//					case 1:
+//						stone = pulls[15];
+//						points += 1;
+//						break;
+//					case 2:
+//						stone = pulls[16];
+//						points += 1;
+//						break;
+//					case 3:
+//						stone = pulls[17];
+//						points += 1;
+//						break;
+//					}
+				// break;
+				}
+
 				if (stones[i][j] < 0) {
 					switch (Math.abs(stones[i][j])) {
 					case 1:
@@ -705,32 +806,51 @@ public class GameView extends View {
 		initSounds();
 		setFocusable(true);
 		setFocusableInTouchMode(true);
-		
-		/* 
+
+		/*
 		 * Calculate according available screen.
 		 */
 		DisplayMetrics metrics = new DisplayMetrics();
-        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int scale = Math.min(metrics.heightPixels, metrics.widthPixels) / 8;
-		
-		pulls[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.first1pull),scale, scale, false);
-		pulls[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.first2pull),scale, scale, false);
-		pulls[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.first3pull),scale, scale, false);
-		pulls[3] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.second1pull),scale, scale, false);
-		pulls[4] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.second2pull),scale, scale, false);
-		pulls[5] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.second3pull),scale, scale, false);
-		pulls[6] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.third1pull),scale, scale, false);
-		pulls[7] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.third2pull),scale, scale, false);
-		pulls[8] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.third3pull),scale, scale, false);
-		pulls[9] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fourth1pull),scale, scale, false);
-		pulls[10] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fourth2pull),scale, scale, false);
-		pulls[11] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fourth3pull),scale, scale, false);
-		pulls[12] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fifth1pull),scale, scale, false);
-		pulls[13] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fifth2pull),scale, scale, false);
-		pulls[14] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.fifth3pull),scale, scale, false);
-		pulls[15] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.sixth1pull),scale, scale, false);
-		pulls[16] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.sixth2pull),scale, scale, false);
-		pulls[17] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.sixth3pull),scale, scale, false);
+		((Activity) context).getWindowManager().getDefaultDisplay()
+				.getMetrics(metrics);
+		int scale = Math.min(metrics.heightPixels, metrics.widthPixels) / 8;
+
+		pulls[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.first1pull), scale, scale, false);
+		pulls[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.first2pull), scale, scale, false);
+		pulls[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.first3pull), scale, scale, false);
+		pulls[3] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.second1pull), scale, scale, false);
+		pulls[4] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.second2pull), scale, scale, false);
+		pulls[5] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.second3pull), scale, scale, false);
+		pulls[6] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.third1pull), scale, scale, false);
+		pulls[7] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.third2pull), scale, scale, false);
+		pulls[8] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.third3pull), scale, scale, false);
+		pulls[9] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fourth1pull), scale, scale, false);
+		pulls[10] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fourth2pull), scale, scale, false);
+		pulls[11] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fourth3pull), scale, scale, false);
+		pulls[12] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fifth1pull), scale, scale, false);
+		pulls[13] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fifth2pull), scale, scale, false);
+		pulls[14] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.fifth3pull), scale, scale, false);
+		pulls[15] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.sixth1pull), scale, scale, false);
+		pulls[16] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.sixth2pull), scale, scale, false);
+		pulls[17] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+				getResources(), R.drawable.sixth3pull), scale, scale, false);
 
 		// TODO Start ANN training by using DE.
 		/* AI training. */{

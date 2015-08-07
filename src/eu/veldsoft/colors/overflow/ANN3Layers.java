@@ -32,7 +32,7 @@ package eu.veldsoft.colors.overflow;
  * 
  * @date 13 Mar 2012
  */
-public class ANN3Layers {
+class ANN3Layers {
 
 	/**
 	 * Database record id.

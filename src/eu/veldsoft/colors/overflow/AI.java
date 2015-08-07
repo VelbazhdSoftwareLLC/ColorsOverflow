@@ -34,7 +34,7 @@ import android.graphics.Point;
  * 
  * @date 09 April 2012
  */
-abstract public class AI {
+abstract class AI {
 
 	/**
 	 * Phase one of the game - when we set 3 stones/deployment moves.
@@ -69,7 +69,7 @@ abstract public class AI {
 	 * 
 	 * @date 13 April 2012
 	 */
-	public Point move(int stones[][], Board.PlayerIndex who, int onMove) throws Exception {
+	public Point move(int stones[][], PlayerIndex who, int onMove) throws Exception {
 		return (null);
 	}
 

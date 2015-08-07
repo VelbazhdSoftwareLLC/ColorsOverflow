@@ -34,85 +34,12 @@ import java.io.Serializable;
  * 
  * @date 11 Mar 2012
  */
-public class Board implements Serializable {
+class Board implements Serializable {
 
 	/**
-	 * 
-	 * @author Todor Balabanov
+	 * Used as a version control in the class.
 	 */
-	public enum PlayerIndex {
-		FIRST(1, "Red Player"), SECOND(2, "Blue Player")/* , THIRD(3, "Purple Player"), FOURTH(4, "Green Player"), FIFTH(5, "Yellow Player"), SIXTH(6, "Brown Player") */;
-
-		private int index;
-		
-		private String tag;
-		
-		static public PlayerIndex index(int index) {
-			if(index == FIRST.index) {
-				return FIRST;
-			}
-			if(index == SECOND.index) {
-				return SECOND;
-			}
-//			if(index == THIRD.index) {
-//				return THIRD;
-//			}
-//			if(index == FOURTH.index) {
-//				return FOURTH;
-//			}
-//			if(index == FIFTH.index) {
-//				return FIFTH;
-//			}
-//			if(index == SIXTH.index) {
-//				return SIXTH;
-//			}
-			
-			return null;
-		}
-
-		private PlayerIndex(int index, String tag) {
-			this.index = index;
-			this.tag = tag;
-		}
-		
-		public String tag() {
-			return tag;
-		}
-		
-		public PlayerIndex next() {
-			if(this == FIRST) {
-				return SECOND;
-			} else if(this == SECOND) {
-				return FIRST;
-//			} else if(this == THIRD) {
-//				return FOURTH;
-//			} else if(this == FOURTH) {
-//				return FIFTH;
-//			} else if(this == FIFTH) {
-//				return SIXTH;
-//			} else if(this == SIXTH) {
-//				return FIRST;
-			}
-			
-			return null;
-		}
-		
-		public int empty() {
-			return index << 8;
-		}
-		
-		public int small() {
-			return (index << 8) + 1;
-		}
-		
-		public int middle() {
-			return (index << 8) + 2;
-		}
-		
-		public int large() {
-			return (index << 8) + 3;
-		}
-	}
+	public static final long serialVersionUID = 1L;
 
 	/**
 	 * What kind of stones are on the board.
@@ -140,44 +67,9 @@ public class Board implements Serializable {
 	public static final int BOARD_MAX_INDEX = 8;
 
 	/**
-	 * Describes a positive piece of size 3.
-	 */
-	public static final int POSITIVE_PIECE_SIZE_3 = +3;
-
-	/**
-	 * Describes a positive piece of size 2.
-	 */
-	public static final int POSITIVE_PIECE_SIZE_2 = +2;
-
-	/**
-	 * Describes a positive piece of size 1.
-	 */
-	public static final int POSITIVE_PIECE_SIZE_1 = +1;
-
-	/**
 	 * This is the empty cell constant.
 	 */
 	public static final int EMPTY_CELL = 0;
-
-	/**
-	 * Describes a negative piece of size 3.
-	 */
-	public static final int NEGATIVE_PIECE_SIZE_3 = -3;
-
-	/**
-	 * Describes a negative piece of size 2.
-	 */
-	public static final int NEGATIVE_PIECE_SIZE_2 = -2;
-
-	/**
-	 * Describes a negative piece of size 1.
-	 */
-	public static final int NEGATIVE_PIECE_SIZE_1 = -1;
-
-	/**
-	 * Used as a version control in the class.
-	 */
-	public static final long serialVersionUID = 1L;
 
 	/**
 	 * Defines the number of initial turns, first 6 (default) turns are with
@@ -244,9 +136,12 @@ public class Board implements Serializable {
 		}
 
 		stones[x][y]++;
+		if (stones[x][y] == 1) {
+			stones[x][y] = who.small();
+		}
 
 		// TODO May be it can be more than 4.
-		int amount = Math.abs(stones[x][y]);
+		int amount = (stones[x][y] & 0xFF);
 		if (amount < 4) {
 			return;
 		} else if (amount == 4) {
@@ -295,16 +190,16 @@ public class Board implements Serializable {
 	 * 
 	 * @date 08 Apr 2012
 	 */
-	public int getWinner() {
+	public PlayerIndex getWinner() {
 		for (int i = 0; i < stones.length; i++) {
 			for (int j = 0; j < stones[i].length; j++) {
 				if (stones[i][j] != EMPTY_CELL) {
-					return (stones[i][j] / Math.abs(stones[i][j]));
+					return (PlayerIndex.index(stones[i][j] >> 8));
 				}
 			}
 		}
 
-		return (0);
+		return (null);
 	}
 
 	/**
@@ -383,7 +278,7 @@ public class Board implements Serializable {
 		 * Regular game move.
 		 */
 		if (turn >= NUMBER_OF_DEPLOYMENT_MOVES && stones[x][y] != EMPTY_CELL
-				&& Board.PlayerIndex.index(stones[x][y]>>8) == who) {
+				&& PlayerIndex.index(stones[x][y] >> 8) == who) {
 			refill(x, y);
 			this.who = this.who.next();
 			turn++;
@@ -446,26 +341,42 @@ public class Board implements Serializable {
 	 * @date 11 Mar 2012
 	 */
 	public boolean end() {
-
+		/*
+		 * The game can not end in the first stage.
+		 */
 		if (turn < NUMBER_OF_DEPLOYMENT_MOVES) {
 			return (false);
 		}
 
-		boolean hasNegative = false;
-		boolean hasPositive = false;
-
+		/*
+		 * Find any player pull on the board.
+		 */
+		int value = 0;
 		for (int j = 0; j < BOARD_SIZE; j++) {
 			for (int i = 0; i < BOARD_SIZE; i++) {
-				if (stones[i][j] < 0) {
-					hasNegative = true;
-				}
-
-				if (stones[i][j] > 0) {
-					hasPositive = true;
+				if (stones[i][j] != EMPTY_CELL) {
+					value = stones[i][j] >> 8;
+					i = BOARD_SIZE;
+					j = BOARD_SIZE;
 				}
 			}
 		}
 
-		return (!(hasNegative && hasPositive));
+		/*
+		 * Search for another player's pull on the board.
+		 */
+		for (int j = 0; j < BOARD_SIZE; j++) {
+			for (int i = 0; i < BOARD_SIZE; i++) {
+				if (stones[i][j] == EMPTY_CELL) {
+					continue;
+				}
+
+				if (value != (stones[i][j] >> 8)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

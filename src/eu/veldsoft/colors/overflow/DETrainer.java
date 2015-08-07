@@ -32,7 +32,7 @@ package eu.veldsoft.colors.overflow;
  * 
  * @date 19 April 2012
  */
-public class DETrainer {
+class DETrainer {
 
 	/**
 	 * Defines the population.

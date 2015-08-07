@@ -35,7 +35,7 @@ import android.graphics.Point;
  * 
  * @date 27 Mar 2012
  */
-public class EasyAI extends AI {
+class EasyAI extends AI {
 
 	/**
 	 * What kind of stones are on the board.
@@ -45,7 +45,7 @@ public class EasyAI extends AI {
 	/**
 	 * Uses +1 for the positive player and -1 for the negative player.
 	 */
-	private Board.PlayerIndex who;
+	private PlayerIndex who;
 
 	/**
 	 * Defines the number of turns.
@@ -97,7 +97,7 @@ public class EasyAI extends AI {
 		for (int i = 0; i < stones.length && found == false; i++) {
 			for (int j = 0; j < stones[i].length && found == false; j++) {
 				if (stones[i][j] != Board.EMPTY_CELL
-						&& Board.PlayerIndex.index(stones[i][j]>>8) == who) {
+						&& PlayerIndex.index(stones[i][j]>>8) == who) {
 					found = true;
 				}
 			}
@@ -119,7 +119,7 @@ public class EasyAI extends AI {
 			coordinates.y = (int) (Math.random() * stones[coordinates.x].length);
 
 			if (stones[coordinates.x][coordinates.y] != Board.EMPTY_CELL
-					&& Board.PlayerIndex.index(stones[coordinates.x][coordinates.y]>>8) == who) {
+					&& PlayerIndex.index(stones[coordinates.x][coordinates.y]>>8) == who) {
 				break;
 			}
 		}
@@ -145,7 +145,7 @@ public class EasyAI extends AI {
 	 * 
 	 * @date 27 Mar 2012
 	 */
-	public Point move(int stones[][], Board.PlayerIndex who, int onMove) throws Exception {
+	public Point move(int stones[][], PlayerIndex who, int onMove) throws Exception {
 		this.stones = stones;
 		this.who = who;
 		this.onMove = onMove;

@@ -34,7 +34,7 @@ import android.graphics.Point;
  * 
  * @date 13 Mar 2012
  */
-public class HardAI extends AI {
+class HardAI extends AI {
 
 	/**
 	 * Creates a new instance of the neural network layer.
@@ -49,7 +49,7 @@ public class HardAI extends AI {
 	/**
 	 * Uses +1 for the positive player and -1 for the negative player.
 	 */
-	private Board.PlayerIndex who;
+	private PlayerIndex who;
 
 	/**
 	 * Holds the coordinates for the AI move.
@@ -129,7 +129,7 @@ public class HardAI extends AI {
 		for (int i = 0, k = 0; i < stones.length; i++) {
 			for (int j = 0; j < stones[i].length; j++, k++) {
 				if (stones[i][j] != 0
-						&& Board.PlayerIndex.index(stones[i][j] >> 8) == who
+						&& PlayerIndex.index(stones[i][j] >> 8) == who
 						&& annOutput[k] > best) {
 					coordinates = new Point(i, j);
 					best = annOutput[k];
@@ -278,7 +278,7 @@ public class HardAI extends AI {
 	 * 
 	 * @date 13 Mar 2012
 	 */
-	public Point move(int stones[][], Board.PlayerIndex who, int onMove)
+	public Point move(int stones[][], PlayerIndex who, int onMove)
 			throws Exception {
 		this.stones = stones;
 		this.who = who;
