@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="redirect_activity_is_missing_message">Redirect activity is missing!</string>
     <string name="app_name">Colors Overflow</string>
     <string name="newgame">New Game</string>
     <string name="exit">Exit</string>
@@ -28,5 +29,6 @@
     <string name="easy_game">Human vs Easy Computer</string>
     <string name="normal_game">Human vs Medium Computer</string>
     <string name="hard_game">Human vs Strong Computer</string>
+    <string name="title_activity_splash">Colors Overflow</string>
 
 </resources>
