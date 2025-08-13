@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="redirect_activity_is_missing_message">Отсутствует активность перенаправления!</string>
+    <string name="app_name">Colors Overflow</string>
+    <string name="newgame">Новая игра</string>
+    <string name="exit">Выход</string>
+    <string name="about">О видеоигре</string>
+    <string name="about_title">О Colors Overflow</string>
+    <string name="sound">Звук</string>
+    <string name="vibrate">Вибрация</string>
+    <string name="back">Назад</string>
+    <string name="settings">Настройки</string>
+    <string name="rules">Правила игры</string>
+    <string name="highscore">Рекорд</string>
+    <string name="splashdesc">Заставка</string>
+    <string name="red_won">Выиграл Красный</string>
+    <string name="blue_won">Выиграл Синий</string>
+    <string name="computer_won">Выиграл Компьютер</string>
+    <string name="blue_turn">Ход Синего</string>
+    <string name="red_turn">Ход Красного</string>
+    <string name="player">Игрок</string>
+    <string name="player_turn">Сейчас ход %s.</string>
+    <string name="highscore_title">Новый рекорд! Победил %s.</string>
+    <string name="toast_game_end">Игра окончена. Победил %s.</string>
+    <string name="won_message">Вы установили новый рекорд. Как вас зовут?</string>
+    <string name="OK_button">OK</string>
+    <string name="human_game">Человек против Человека</string>
+    <string name="easy_game">Человек против Лёгкого ПК</string>
+    <string name="normal_game">Человек против Среднего ПК</string>
+    <string name="hard_game">Человек против Сильного ПК</string>
+    <string name="title_activity_splash">Colors Overflow</string>
+
+</resources>
