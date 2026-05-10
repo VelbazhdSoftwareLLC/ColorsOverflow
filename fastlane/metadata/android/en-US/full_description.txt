@@ -1,0 +1,14 @@
+Colors Overflow is a very simple but very addictive board game developed by Velbazhd Software LLC.
+
+This is a free/libre software game that provides an engaging and challenging puzzle experience. The game mechanics are easy to learn but difficult to master, making it perfect for players of all skill levels.
+
+Challenge yourself with increasingly difficult levels and see how far you can go! The game features a clean, minimalist design that focuses on the gameplay itself.
+
+Key features:
+- Simple and intuitive gameplay
+- Addictive puzzle mechanics
+- Clean and minimalist design
+- Free and open source software
+- Suitable for all ages
+
+Download now and start playing this captivating board game!

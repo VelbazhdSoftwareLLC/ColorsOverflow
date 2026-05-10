@@ -1,0 +1,9 @@
+app_identifier("eu.veldsoft.colors.overflow") # The bundle identifier of your app
+package_name("eu.veldsoft.colors.overflow") # The package name of your app
+
+# For more information about how to set up Fastlane for Android, check out the documentation:
+# https://docs.fastlane.tools/best-practices/android-platform/
+
+# You can define additional configuration options here, such as:
+# json_key_file("path/to/your/service-account-key.json")
+# upload_to_play_store_track("internal")
